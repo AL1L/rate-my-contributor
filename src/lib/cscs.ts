@@ -4,12 +4,51 @@ import { prisma } from "./prisma";
  * Calculate Coding Social Credit Score (CSCS) for a GitHub profile
  * Range: 0-1000, Default: 500
  * 
- * Algorithm:
- * - Base score: 500
- * - Each rating contributes based on:
- *   1. Star rating (1-5 stars mapped to -100 to +100 points)
- *   2. Reviewer's CSCS (higher reviewer score = more weight)
- *   3. Time decay (more recent = higher weight)
+ * Algorithm Overview:
+ * The CSCS is a weighted scoring system that evaluates a contributor's reputation
+ * based on ratings from other users. The algorithm balances multiple factors to
+ * create a fair and dynamic reputation score.
+ * 
+ * Base Score: 500 points (neutral starting point)
+ * 
+ * Rating Contribution:
+ * - Each rating contributes -4 to +4 points based on stars:
+ *   * 1 star = -4 points
+ *   * 2 stars = -2 points
+ *   * 3 stars =  0 points (neutral)
+ *   * 4 stars = +2 points
+ *   * 5 stars = +4 points
+ * 
+ * Reviewer Weight (0.5x to 1.5x multiplier):
+ * - Ratings from higher-reputation reviewers carry more weight
+ * - CSCS 0   → 0.5x weight (low credibility reviewer)
+ * - CSCS 500 → 1.0x weight (average reviewer)
+ * - CSCS 1000→ 1.5x weight (high credibility reviewer)
+ * - Formula: weight = 0.5 + (reviewer_cscs / 1000)
+ * 
+ * Position Weight (1.0x to 1.5x multiplier):
+ * - More recent ratings in the sequence count more
+ * - First rating  → 1.0x weight
+ * - Last rating   → 1.5x weight
+ * - Formula: weight = 1.0 + (position / total_ratings) * 0.5
+ * 
+ * Time Decay (0.3x to 1.0x multiplier):
+ * - Ratings decay exponentially over time
+ * - Fresh ratings → 1.0x weight
+ * - 1 year old    → ~0.37x weight
+ * - 2+ years old  → ~0.3x weight (minimum)
+ * - Formula: weight = max(0.3, e^(-days/365))
+ * 
+ * Final Calculation:
+ * 1. For each rating, calculate: contribution = score * reviewer_weight * position_weight * time_weight
+ * 2. Sum all weighted contributions and weights
+ * 3. Final CSCS = 500 + (total_weighted_contributions / total_weights)
+ * 4. Clamp result between 0 and 1000
+ * 
+ * Example:
+ * - Profile with 5 ratings: [5★, 5★, 4★, 3★, 2★]
+ * - All reviewers at 500 CSCS, all recent
+ * - Weighted average ≈ +2.4 points → Final CSCS ≈ 502
  */
 export async function calculateCSCS(githubProfileId: string): Promise<number> {
   const profile = await prisma.gitHubProfile.findUnique({
@@ -17,7 +56,11 @@ export async function calculateCSCS(githubProfileId: string): Promise<number> {
     include: {
       ratings: {
         include: {
-          user: true,
+          user: {
+            include: {
+              githubProfile: true
+            }
+          }
         },
         orderBy: { createdAt: 'asc' },
       },

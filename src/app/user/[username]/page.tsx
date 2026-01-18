@@ -115,7 +115,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           },
         },
       },
-    });
+    }) as typeof profile;
   }
 
   // Fetch GitHub PRs
