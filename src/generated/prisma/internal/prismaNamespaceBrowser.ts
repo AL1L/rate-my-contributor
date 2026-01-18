@@ -172,6 +172,7 @@ export const RatingScalarFieldEnum = {
   id: 'id',
   score: 'score',
   comment: 'comment',
+  userId: 'userId',
   userEmail: 'userEmail',
   githubProfileId: 'githubProfileId',
   createdAt: 'createdAt',

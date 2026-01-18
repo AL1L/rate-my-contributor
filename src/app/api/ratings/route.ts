@@ -37,33 +37,33 @@ export async function POST(req: NextRequest) {
   }
 
   // Check if user already has a rating for this profile
-  const existingRating = await prisma.rating.findUnique({
+  const existingRating = await prisma.rating.findFirst({
     where: {
-      userEmail_githubProfileId: {
-        userEmail: session.user.email,
-        githubProfileId,
-      },
-    },
-  });
-
-  const rating = await prisma.rating.upsert({
-    where: {
-      userEmail_githubProfileId: {
-        userEmail: session.user.email,
-        githubProfileId,
-      },
-    },
-    update: {
-      score,
-      comment: sanitizedComment,
-    },
-    create: {
-      score,
-      comment: sanitizedComment,
-      userEmail: session.user.email,
+      userId: session.user.id,
       githubProfileId,
     },
   });
+
+  let rating;
+  if (existingRating) {
+    rating = await prisma.rating.update({
+      where: { id: existingRating.id },
+      data: {
+        score,
+        comment: sanitizedComment,
+      },
+    });
+  } else {
+    rating = await prisma.rating.create({
+      data: {
+        score,
+        comment: sanitizedComment,
+        userId: session.user.id,
+        userEmail: session.user.email,
+        githubProfileId,
+      },
+    });
+  }
 
   // Create notification only for new ratings
   if (!existingRating) {
@@ -99,7 +99,7 @@ export async function DELETE(req: NextRequest) {
 
   await prisma.rating.deleteMany({
     where: {
-      userEmail: session.user.email,
+      userId: session.user.id,
       githubProfileId,
     },
   });

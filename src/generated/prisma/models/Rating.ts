@@ -38,6 +38,7 @@ export type RatingMinAggregateOutputType = {
   id: string | null
   score: number | null
   comment: string | null
+  userId: string | null
   userEmail: string | null
   githubProfileId: string | null
   createdAt: Date | null
@@ -48,6 +49,7 @@ export type RatingMaxAggregateOutputType = {
   id: string | null
   score: number | null
   comment: string | null
+  userId: string | null
   userEmail: string | null
   githubProfileId: string | null
   createdAt: Date | null
@@ -58,6 +60,7 @@ export type RatingCountAggregateOutputType = {
   id: number
   score: number
   comment: number
+  userId: number
   userEmail: number
   githubProfileId: number
   createdAt: number
@@ -78,6 +81,7 @@ export type RatingMinAggregateInputType = {
   id?: true
   score?: true
   comment?: true
+  userId?: true
   userEmail?: true
   githubProfileId?: true
   createdAt?: true
@@ -88,6 +92,7 @@ export type RatingMaxAggregateInputType = {
   id?: true
   score?: true
   comment?: true
+  userId?: true
   userEmail?: true
   githubProfileId?: true
   createdAt?: true
@@ -98,6 +103,7 @@ export type RatingCountAggregateInputType = {
   id?: true
   score?: true
   comment?: true
+  userId?: true
   userEmail?: true
   githubProfileId?: true
   createdAt?: true
@@ -195,6 +201,7 @@ export type RatingGroupByOutputType = {
   id: string
   score: number
   comment: string | null
+  userId: string
   userEmail: string
   githubProfileId: string
   createdAt: Date
@@ -228,10 +235,12 @@ export type RatingWhereInput = {
   id?: Prisma.StringFilter<"Rating"> | string
   score?: Prisma.IntFilter<"Rating"> | number
   comment?: Prisma.StringNullableFilter<"Rating"> | string | null
+  userId?: Prisma.StringFilter<"Rating"> | string
   userEmail?: Prisma.StringFilter<"Rating"> | string
   githubProfileId?: Prisma.StringFilter<"Rating"> | string
   createdAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   githubProfile?: Prisma.XOR<Prisma.GitHubProfileScalarRelationFilter, Prisma.GitHubProfileWhereInput>
 }
 
@@ -239,32 +248,37 @@ export type RatingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   comment?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   githubProfileId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  user?: Prisma.UserOrderByWithRelationInput
   githubProfile?: Prisma.GitHubProfileOrderByWithRelationInput
 }
 
 export type RatingWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  userEmail_githubProfileId?: Prisma.RatingUserEmailGithubProfileIdCompoundUniqueInput
+  userId_githubProfileId?: Prisma.RatingUserIdGithubProfileIdCompoundUniqueInput
   AND?: Prisma.RatingWhereInput | Prisma.RatingWhereInput[]
   OR?: Prisma.RatingWhereInput[]
   NOT?: Prisma.RatingWhereInput | Prisma.RatingWhereInput[]
   score?: Prisma.IntFilter<"Rating"> | number
   comment?: Prisma.StringNullableFilter<"Rating"> | string | null
+  userId?: Prisma.StringFilter<"Rating"> | string
   userEmail?: Prisma.StringFilter<"Rating"> | string
   githubProfileId?: Prisma.StringFilter<"Rating"> | string
   createdAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   githubProfile?: Prisma.XOR<Prisma.GitHubProfileScalarRelationFilter, Prisma.GitHubProfileWhereInput>
-}, "id" | "userEmail_githubProfileId">
+}, "id" | "userId_githubProfileId">
 
 export type RatingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   comment?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   githubProfileId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -283,6 +297,7 @@ export type RatingScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Rating"> | string
   score?: Prisma.IntWithAggregatesFilter<"Rating"> | number
   comment?: Prisma.StringNullableWithAggregatesFilter<"Rating"> | string | null
+  userId?: Prisma.StringWithAggregatesFilter<"Rating"> | string
   userEmail?: Prisma.StringWithAggregatesFilter<"Rating"> | string
   githubProfileId?: Prisma.StringWithAggregatesFilter<"Rating"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Rating"> | Date | string
@@ -296,6 +311,7 @@ export type RatingCreateInput = {
   userEmail: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutRatingsInput
   githubProfile: Prisma.GitHubProfileCreateNestedOneWithoutRatingsInput
 }
 
@@ -303,6 +319,7 @@ export type RatingUncheckedCreateInput = {
   id?: string
   score: number
   comment?: string | null
+  userId: string
   userEmail: string
   githubProfileId: string
   createdAt?: Date | string
@@ -316,6 +333,7 @@ export type RatingUpdateInput = {
   userEmail?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutRatingsNestedInput
   githubProfile?: Prisma.GitHubProfileUpdateOneRequiredWithoutRatingsNestedInput
 }
 
@@ -323,6 +341,7 @@ export type RatingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.StringFieldUpdateOperationsInput | string
   githubProfileId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -333,6 +352,7 @@ export type RatingCreateManyInput = {
   id?: string
   score: number
   comment?: string | null
+  userId: string
   userEmail: string
   githubProfileId: string
   createdAt?: Date | string
@@ -352,6 +372,7 @@ export type RatingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.StringFieldUpdateOperationsInput | string
   githubProfileId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -368,8 +389,8 @@ export type RatingOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type RatingUserEmailGithubProfileIdCompoundUniqueInput = {
-  userEmail: string
+export type RatingUserIdGithubProfileIdCompoundUniqueInput = {
+  userId: string
   githubProfileId: string
 }
 
@@ -377,6 +398,7 @@ export type RatingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   comment?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   githubProfileId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -391,6 +413,7 @@ export type RatingMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   comment?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   githubProfileId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -401,6 +424,7 @@ export type RatingMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   score?: Prisma.SortOrder
   comment?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   githubProfileId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -409,6 +433,48 @@ export type RatingMinOrderByAggregateInput = {
 
 export type RatingSumOrderByAggregateInput = {
   score?: Prisma.SortOrder
+}
+
+export type RatingCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.RatingCreateWithoutUserInput, Prisma.RatingUncheckedCreateWithoutUserInput> | Prisma.RatingCreateWithoutUserInput[] | Prisma.RatingUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.RatingCreateOrConnectWithoutUserInput | Prisma.RatingCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.RatingCreateManyUserInputEnvelope
+  connect?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+}
+
+export type RatingUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.RatingCreateWithoutUserInput, Prisma.RatingUncheckedCreateWithoutUserInput> | Prisma.RatingCreateWithoutUserInput[] | Prisma.RatingUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.RatingCreateOrConnectWithoutUserInput | Prisma.RatingCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.RatingCreateManyUserInputEnvelope
+  connect?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+}
+
+export type RatingUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.RatingCreateWithoutUserInput, Prisma.RatingUncheckedCreateWithoutUserInput> | Prisma.RatingCreateWithoutUserInput[] | Prisma.RatingUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.RatingCreateOrConnectWithoutUserInput | Prisma.RatingCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.RatingUpsertWithWhereUniqueWithoutUserInput | Prisma.RatingUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.RatingCreateManyUserInputEnvelope
+  set?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  disconnect?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  delete?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  connect?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  update?: Prisma.RatingUpdateWithWhereUniqueWithoutUserInput | Prisma.RatingUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.RatingUpdateManyWithWhereWithoutUserInput | Prisma.RatingUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.RatingScalarWhereInput | Prisma.RatingScalarWhereInput[]
+}
+
+export type RatingUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.RatingCreateWithoutUserInput, Prisma.RatingUncheckedCreateWithoutUserInput> | Prisma.RatingCreateWithoutUserInput[] | Prisma.RatingUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.RatingCreateOrConnectWithoutUserInput | Prisma.RatingCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.RatingUpsertWithWhereUniqueWithoutUserInput | Prisma.RatingUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.RatingCreateManyUserInputEnvelope
+  set?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  disconnect?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  delete?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  connect?: Prisma.RatingWhereUniqueInput | Prisma.RatingWhereUniqueInput[]
+  update?: Prisma.RatingUpdateWithWhereUniqueWithoutUserInput | Prisma.RatingUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.RatingUpdateManyWithWhereWithoutUserInput | Prisma.RatingUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.RatingScalarWhereInput | Prisma.RatingScalarWhereInput[]
 }
 
 export type RatingCreateNestedManyWithoutGithubProfileInput = {
@@ -461,6 +527,66 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type RatingCreateWithoutUserInput = {
+  id?: string
+  score: number
+  comment?: string | null
+  userEmail: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  githubProfile: Prisma.GitHubProfileCreateNestedOneWithoutRatingsInput
+}
+
+export type RatingUncheckedCreateWithoutUserInput = {
+  id?: string
+  score: number
+  comment?: string | null
+  userEmail: string
+  githubProfileId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RatingCreateOrConnectWithoutUserInput = {
+  where: Prisma.RatingWhereUniqueInput
+  create: Prisma.XOR<Prisma.RatingCreateWithoutUserInput, Prisma.RatingUncheckedCreateWithoutUserInput>
+}
+
+export type RatingCreateManyUserInputEnvelope = {
+  data: Prisma.RatingCreateManyUserInput | Prisma.RatingCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type RatingUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.RatingWhereUniqueInput
+  update: Prisma.XOR<Prisma.RatingUpdateWithoutUserInput, Prisma.RatingUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.RatingCreateWithoutUserInput, Prisma.RatingUncheckedCreateWithoutUserInput>
+}
+
+export type RatingUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.RatingWhereUniqueInput
+  data: Prisma.XOR<Prisma.RatingUpdateWithoutUserInput, Prisma.RatingUncheckedUpdateWithoutUserInput>
+}
+
+export type RatingUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.RatingScalarWhereInput
+  data: Prisma.XOR<Prisma.RatingUpdateManyMutationInput, Prisma.RatingUncheckedUpdateManyWithoutUserInput>
+}
+
+export type RatingScalarWhereInput = {
+  AND?: Prisma.RatingScalarWhereInput | Prisma.RatingScalarWhereInput[]
+  OR?: Prisma.RatingScalarWhereInput[]
+  NOT?: Prisma.RatingScalarWhereInput | Prisma.RatingScalarWhereInput[]
+  id?: Prisma.StringFilter<"Rating"> | string
+  score?: Prisma.IntFilter<"Rating"> | number
+  comment?: Prisma.StringNullableFilter<"Rating"> | string | null
+  userId?: Prisma.StringFilter<"Rating"> | string
+  userEmail?: Prisma.StringFilter<"Rating"> | string
+  githubProfileId?: Prisma.StringFilter<"Rating"> | string
+  createdAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
+}
+
 export type RatingCreateWithoutGithubProfileInput = {
   id?: string
   score: number
@@ -468,12 +594,14 @@ export type RatingCreateWithoutGithubProfileInput = {
   userEmail: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutRatingsInput
 }
 
 export type RatingUncheckedCreateWithoutGithubProfileInput = {
   id?: string
   score: number
   comment?: string | null
+  userId: string
   userEmail: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -505,23 +633,51 @@ export type RatingUpdateManyWithWhereWithoutGithubProfileInput = {
   data: Prisma.XOR<Prisma.RatingUpdateManyMutationInput, Prisma.RatingUncheckedUpdateManyWithoutGithubProfileInput>
 }
 
-export type RatingScalarWhereInput = {
-  AND?: Prisma.RatingScalarWhereInput | Prisma.RatingScalarWhereInput[]
-  OR?: Prisma.RatingScalarWhereInput[]
-  NOT?: Prisma.RatingScalarWhereInput | Prisma.RatingScalarWhereInput[]
-  id?: Prisma.StringFilter<"Rating"> | string
-  score?: Prisma.IntFilter<"Rating"> | number
-  comment?: Prisma.StringNullableFilter<"Rating"> | string | null
-  userEmail?: Prisma.StringFilter<"Rating"> | string
-  githubProfileId?: Prisma.StringFilter<"Rating"> | string
-  createdAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Rating"> | Date | string
+export type RatingCreateManyUserInput = {
+  id?: string
+  score: number
+  comment?: string | null
+  userEmail: string
+  githubProfileId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RatingUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  githubProfile?: Prisma.GitHubProfileUpdateOneRequiredWithoutRatingsNestedInput
+}
+
+export type RatingUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  githubProfileId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RatingUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  githubProfileId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RatingCreateManyGithubProfileInput = {
   id?: string
   score: number
   comment?: string | null
+  userId: string
   userEmail: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -534,12 +690,14 @@ export type RatingUpdateWithoutGithubProfileInput = {
   userEmail?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutRatingsNestedInput
 }
 
 export type RatingUncheckedUpdateWithoutGithubProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -549,6 +707,7 @@ export type RatingUncheckedUpdateManyWithoutGithubProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   score?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -560,10 +719,12 @@ export type RatingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   score?: boolean
   comment?: boolean
+  userId?: boolean
   userEmail?: boolean
   githubProfileId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   githubProfile?: boolean | Prisma.GitHubProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rating"]>
 
@@ -571,10 +732,12 @@ export type RatingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   score?: boolean
   comment?: boolean
+  userId?: boolean
   userEmail?: boolean
   githubProfileId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   githubProfile?: boolean | Prisma.GitHubProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rating"]>
 
@@ -582,10 +745,12 @@ export type RatingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   score?: boolean
   comment?: boolean
+  userId?: boolean
   userEmail?: boolean
   githubProfileId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   githubProfile?: boolean | Prisma.GitHubProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rating"]>
 
@@ -593,32 +758,38 @@ export type RatingSelectScalar = {
   id?: boolean
   score?: boolean
   comment?: boolean
+  userId?: boolean
   userEmail?: boolean
   githubProfileId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RatingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "score" | "comment" | "userEmail" | "githubProfileId" | "createdAt" | "updatedAt", ExtArgs["result"]["rating"]>
+export type RatingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "score" | "comment" | "userId" | "userEmail" | "githubProfileId" | "createdAt" | "updatedAt", ExtArgs["result"]["rating"]>
 export type RatingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   githubProfile?: boolean | Prisma.GitHubProfileDefaultArgs<ExtArgs>
 }
 export type RatingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   githubProfile?: boolean | Prisma.GitHubProfileDefaultArgs<ExtArgs>
 }
 export type RatingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   githubProfile?: boolean | Prisma.GitHubProfileDefaultArgs<ExtArgs>
 }
 
 export type $RatingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Rating"
   objects: {
+    user: Prisma.$UserPayload<ExtArgs>
     githubProfile: Prisma.$GitHubProfilePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     score: number
     comment: string | null
+    userId: string
     userEmail: string
     githubProfileId: string
     createdAt: Date
@@ -1017,6 +1188,7 @@ readonly fields: RatingFieldRefs;
  */
 export interface Prisma__RatingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   githubProfile<T extends Prisma.GitHubProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GitHubProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__GitHubProfileClient<runtime.Types.Result.GetResult<Prisma.$GitHubProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1050,6 +1222,7 @@ export interface RatingFieldRefs {
   readonly id: Prisma.FieldRef<"Rating", 'String'>
   readonly score: Prisma.FieldRef<"Rating", 'Int'>
   readonly comment: Prisma.FieldRef<"Rating", 'String'>
+  readonly userId: Prisma.FieldRef<"Rating", 'String'>
   readonly userEmail: Prisma.FieldRef<"Rating", 'String'>
   readonly githubProfileId: Prisma.FieldRef<"Rating", 'String'>
   readonly createdAt: Prisma.FieldRef<"Rating", 'DateTime'>

@@ -25,6 +25,7 @@ model User {
   darkMode      Boolean        @default(false)
   accounts      Account[]
   sessions      Session[]
+  ratings       Rating[]
   githubProfile GitHubProfile? @relation(fields: [githubProfileId], references: [id])
   githubProfileId String?      @unique
 
@@ -107,13 +108,15 @@ model Rating {
   id              String        @id @default(cuid())
   score           Int
   comment         String?
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
   userEmail       String
   githubProfile   GitHubProfile @relation(fields: [githubProfileId], references: [id])
   githubProfileId String
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  @@unique([userEmail, githubProfileId])
+  @@unique([userId, githubProfileId])
   @@index([score])
 }
 

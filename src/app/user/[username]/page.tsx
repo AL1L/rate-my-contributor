@@ -132,11 +132,11 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
   // Get current user's rating if logged in
   let userRating = null;
-  if (session?.user?.email && !isOwnProfile) {
+  if (session?.user?.id && !isOwnProfile) {
     userRating = await prisma.rating.findUnique({
       where: {
-        userEmail_githubProfileId: {
-          userEmail: session.user.email,
+        userId_githubProfileId: {
+          userId: session.user.id,
           githubProfileId: profile.id,
         },
       },
