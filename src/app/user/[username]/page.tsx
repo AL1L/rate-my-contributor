@@ -8,8 +8,68 @@ import RatingForm from "@/components/RatingForm";
 import { IconGitPullRequest, IconGitCommit, IconBrandGithub } from "@tabler/icons-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
+  const { username } = await params;
+  
+  const githubUser = await fetchGitHubUser(username);
+  
+  if (!githubUser) {
+    return {
+      title: "User Not Found - Rate My Contributor",
+      description: "This user could not be found on GitHub.",
+    };
+  }
+
+  const profile = await prisma.gitHubProfile.findUnique({
+    where: { username },
+    include: {
+      ratings: true,
+    },
+  });
+
+  const avgRating = profile?.ratings.length
+    ? (profile.ratings.reduce((sum, r) => sum + r.score, 0) / profile.ratings.length).toFixed(1)
+    : "0.0";
+  
+  const ratingCount = profile?.ratings.length || 0;
+  const totalUsers = await prisma.gitHubProfile.count();
+
+  const description = ratingCount > 0
+    ? `Come look at ${username}'s reputation on GitHub along with ${totalUsers.toLocaleString()} others. ${avgRating} stars from ${ratingCount} ${ratingCount === 1 ? 'review' : 'reviews'}.`
+    : `Check out ${username}'s profile on Rate My Contributor along with ${totalUsers.toLocaleString()} other GitHub users.`;
+
+  const ogImageUrl = profile 
+    ? `/api/og?username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(githubUser.avatar_url)}&rating=${avgRating}&count=${ratingCount}`
+    : `/api/og?username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(githubUser.avatar_url)}`;
+
+  return {
+    title: `${username} - Rate My Contributor`,
+    description,
+    openGraph: {
+      title: `${username} on Rate My Contributor`,
+      description,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${username}'s profile`,
+        },
+      ],
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${username} on Rate My Contributor`,
+      description,
+      images: [ogImageUrl],
+    },
+  };
+}
 
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;

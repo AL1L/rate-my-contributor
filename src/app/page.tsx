@@ -4,8 +4,35 @@ import UserAvatar from "@/components/UserAvatar";
 import RatingStars from "@/components/RatingStars";
 import Card from "@/components/Card";
 import { IconGitPullRequest, IconUsers, IconStar } from "@tabler/icons-react";
+import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: "Rate My Contributor - Discover and Rate GitHub Users",
+  description: "Join the community of developers rating GitHub contributors. Discover top-rated developers and share your feedback!",
+  openGraph: {
+    title: "Rate My Contributor",
+    description: "Join the community of developers rating GitHub contributors. Discover top-rated developers and share your feedback!",
+    images: [
+      {
+        url: "/api/og/home",
+        width: 1200,
+        height: 630,
+        alt: "Rate My Contributor - Discover and Rate GitHub Users",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rate My Contributor",
+    description: "Join the community of developers rating GitHub contributors. Discover top-rated developers and share your feedback!",
+    images: [
+      "/api/og/home",
+    ],
+  },
+};
 
 export default async function HomePage() {
   // Get top rated GitHub profiles
