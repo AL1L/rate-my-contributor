@@ -4,71 +4,76 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // Get the session token
+  
   const token = await getToken({ 
     req: request, 
     secret: process.env.NEXTAUTH_SECRET 
   });
 
-  // Protect /dashboard routes
+  // Public API routes that don't require authentication
+  const publicPaths = [
+    "/api/auth",
+    "/api/users",
+    "/api/og",
+    "/auth/signin",
+    "/user/",
+    "/contributors",
+    "/",
+  ];
+
+  const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
+
+  // Allow public paths
+  if (isPublicPath) {
+    return NextResponse.next();
+  }
+
+  // Protect /dashboard - requires authentication
   if (pathname.startsWith("/dashboard")) {
     if (!token) {
       const url = new URL("/api/auth/signin", request.url);
       url.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(url);
     }
+    return NextResponse.next();
   }
 
-  // Protect /admin routes - check role from token
-  // Note: This is preliminary check, API routes still verify from database
+  // Protect /admin - requires admin role
   if (pathname.startsWith("/admin")) {
-    if (!token || token.role !== "admin") {
+    if (!token) {
+      return NextResponse.redirect(new URL("/api/auth/signin", request.url));
+    }
+    if (token.role !== "admin") {
       return NextResponse.redirect(new URL("/", request.url));
     }
+    return NextResponse.next();
   }
 
-  // Protect API routes
+  // Protect /api/admin - requires admin role
+  if (pathname.startsWith("/api/admin")) {
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (token.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.next();
+  }
+
+  // Protect all other API routes - requires authentication
   if (pathname.startsWith("/api")) {
-    // Allow auth routes
-    if (pathname.startsWith("/api/auth")) {
-      return NextResponse.next();
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    // Require authentication for other API routes except public ones
-    const publicApiRoutes = ["/api/users", "/api/og"];
-    const isPublicRoute = publicApiRoutes.some(route => pathname.startsWith(route));
-
-    if (!isPublicRoute && !token) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    // Check admin routes
-    if (pathname.startsWith("/api/admin")) {
-      if (!token || token.role !== "admin") {
-        return NextResponse.json(
-          { error: "Unauthorized" },
-          { status: 401 }
-        );
-      }
-    }
+    return NextResponse.next();
   }
 
+  // Allow everything else
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
