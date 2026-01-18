@@ -81,12 +81,10 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user, account, profile }) {
-      if (account && profile) {
-        const githubProfile = profile as any;
-        token.username = githubProfile.login;
-        
+      // Always fetch user data to ensure role is up to date
+      if (token.email) {
         const dbUser = await prisma.user.findFirst({
-          where: { email: token.email! },
+          where: { email: token.email },
           include: { githubProfile: true }
         });
         
@@ -94,9 +92,18 @@ export const authOptions: NextAuthOptions = {
           token.id = dbUser.id;
           token.role = dbUser.role;
           token.darkMode = dbUser.darkMode;
-          token.username = dbUser.githubProfile?.username || githubProfile.login;
+          token.username = dbUser.githubProfile?.username;
         }
       }
+      
+      // On initial sign-in, set username from GitHub profile
+      if (account && profile) {
+        const githubProfile = profile as any;
+        if (!token.username) {
+          token.username = githubProfile.login;
+        }
+      }
+      
       return token;
     },
     async session({ session, token }) {
