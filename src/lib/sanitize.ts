@@ -1,11 +1,11 @@
-import DOMPurify from "isomorphic-dompurify";
-
 export function sanitizeInput(input: string): string {
+  // TODO: Make better
   // Remove all HTML tags and scripts
-  return DOMPurify.sanitize(input, { 
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: []
-  });
+  return input
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .trim();
 }
 
 export function validateSearchInput(input: string): string {
