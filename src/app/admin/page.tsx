@@ -7,7 +7,9 @@ import UserAvatar from "@/components/UserAvatar";
 import { IconUsers, IconStar, IconGitPullRequest, IconTrash } from "@tabler/icons-react";
 import DeleteButton from "@/components/DeleteButton";
 import DeleteRatingButton from "@/components/DeleteRatingButton";
+import RecalculateCSCSButton from "@/components/RecalculateCSCSButton";
 import { isUserAdmin } from "@/lib/auth-helpers";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +51,14 @@ export default async function AdminPage() {
     take: 50,
   });
 
+  const contributors = await prisma.gitHubProfile.findMany({
+    include: {
+      user: true,
+      ratings: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
   const totalUsers = users.length;
   const totalRatings = await prisma.rating.count();
   const totalPRs = await prisma.pullRequest.count();
@@ -86,6 +96,94 @@ export default async function AdminPage() {
               </h3>
             </div>
             <p className="text-4xl font-bold text-zinc-900 dark:text-white">{totalPRs}</p>
+          </Card>
+        </div>
+
+        {/* Contributors List */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Contributors</h2>
+            <form action="/api/admin/cscs/recalculate" method="POST">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Recalculate All CSCS
+              </button>
+            </form>
+          </div>
+          <Card className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    Username
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    CSCS
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    Ratings
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    Avg Score
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                {contributors.map((contributor) => {
+                  const avgRating = contributor.ratings.length > 0
+                    ? (contributor.ratings.reduce((sum, r) => sum + r.score, 0) / contributor.ratings.length).toFixed(1)
+                    : "0.0";
+
+                  return (
+                    <tr key={contributor.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link href={`/user/${contributor.username}`} className="flex items-center gap-3 hover:opacity-80">
+                          <UserAvatar 
+                            src={contributor.avatarUrl} 
+                            username={contributor.username} 
+                            size={40} 
+                          />
+                          <span className="text-sm font-medium text-zinc-900 dark:text-white">
+                            {contributor.username}
+                          </span>
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`text-sm font-mono font-bold ${
+                          contributor.cscs < 100
+                            ? "text-red-950 dark:text-red-400"
+                            : contributor.cscs < 250
+                            ? "text-red-700 dark:text-red-400"
+                            : contributor.cscs < 500
+                            ? "text-yellow-700 dark:text-yellow-400"
+                            : contributor.cscs < 750
+                            ? "text-lime-700 dark:text-lime-400"
+                            : contributor.cscs < 950
+                            ? "text-green-700 dark:text-green-400"
+                            : "text-purple-700 dark:text-purple-400"
+                        }`}>
+                          {contributor.cscs}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-600 dark:text-zinc-400">
+                        {contributor.ratings.length}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-bold text-yellow-500">{avgRating}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <RecalculateCSCSButton githubProfileId={contributor.id} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </Card>
         </div>
 

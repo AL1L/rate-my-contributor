@@ -14,9 +14,9 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await params;
-  
+
   const githubUser = await fetchGitHubUser(username);
-  
+
   if (!githubUser) {
     return {
       title: "User Not Found - Rate My Contributor",
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
   const avgRating = profile?.ratings.length
     ? (profile.ratings.reduce((sum, r) => sum + r.score, 0) / profile.ratings.length).toFixed(1)
     : "0.0";
-  
+
   const ratingCount = profile?.ratings.length || 0;
   const totalUsers = await prisma.gitHubProfile.count();
 
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
     ? `Come look at ${username}'s reputation on GitHub along with ${totalUsers.toLocaleString()} others. ${avgRating} stars from ${ratingCount} ${ratingCount === 1 ? 'review' : 'reviews'}.`
     : `Check out ${username}'s profile on Rate My Contributor along with ${totalUsers.toLocaleString()} other GitHub users.`;
 
-  const ogImageUrl = profile 
+  const ogImageUrl = profile
     ? `/api/og?username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(githubUser.avatar_url)}&rating=${avgRating}&count=${ratingCount}`
     : `/api/og?username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(githubUser.avatar_url)}`;
 
@@ -76,15 +76,16 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
   // Fetch GitHub data first
   const githubUser = await fetchGitHubUser(username);
-  
+
   if (!githubUser) {
     notFound();
   }
 
   // Fetch or create GitHubProfile in database
-  let profile = await prisma.gitHubProfile.findUnique({
+  let profile = (await prisma.gitHubProfile.findUnique({
     where: { username },
     include: {
+      user: true,
       ratings: {
         orderBy: { createdAt: "desc" },
       },
@@ -96,7 +97,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
         take: 10,
       },
     },
-  });
+  }))!;
 
   // If profile doesn't exist in DB, create it
   if (!profile) {
@@ -151,10 +152,41 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           <div className="flex flex-col md:flex-row gap-6">
             <UserAvatar src={profile.avatarUrl} username={profile.username} size={120} />
             <div className="flex-1">
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center justify-between gap-4 mb-4">
                 <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
                   {profile.username}
                 </h1>
+                {session?.user?.role === "admin" && (
+                  <div className={`px-4 py-2 rounded-lg border ${
+                    profile.cscs < 100
+                      ? "bg-red-950 dark:bg-red-950 border-red-900 dark:border-red-900"
+                      : profile.cscs < 250
+                      ? "bg-red-100 dark:bg-red-900 border-red-300 dark:border-red-700"
+                      : profile.cscs < 500
+                      ? "bg-yellow-100 dark:bg-yellow-900 border-yellow-300 dark:border-yellow-700"
+                      : profile.cscs < 750
+                      ? "bg-lime-100 dark:bg-lime-900 border-lime-300 dark:border-lime-700"
+                      : profile.cscs < 950
+                      ? "bg-green-100 dark:bg-green-900 border-green-300 dark:border-green-700"
+                      : "bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-700"
+                  }`}>
+                    <p className={`text-sm font-mono font-bold ${
+                      profile.cscs < 100
+                        ? "text-red-100 dark:text-red-100"
+                        : profile.cscs < 250
+                        ? "text-red-900 dark:text-red-100"
+                        : profile.cscs < 500
+                        ? "text-yellow-900 dark:text-yellow-100"
+                        : profile.cscs < 750
+                        ? "text-lime-900 dark:text-lime-100"
+                        : profile.cscs < 950
+                        ? "text-green-900 dark:text-green-100"
+                        : "text-purple-900 dark:text-purple-100"
+                    }`}>
+                      CSCS: {profile.cscs}
+                    </p>
+                  </div>
+                )}
               </div>
               {githubUser.bio && (
                 <p className="text-zinc-700 dark:text-zinc-300 mb-4">{githubUser.bio}</p>
@@ -222,11 +254,10 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                         {pr.title}
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
-                        <span className={`px-2 py-1 rounded ${
-                          pr.state === "open"
+                        <span className={`px-2 py-1 rounded ${pr.state === "open"
                             ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                             : "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
-                        }`}>
+                          }`}>
                           {pr.state}
                         </span>
                         <span>{new Date(pr.created_at).toLocaleDateString()}</span>

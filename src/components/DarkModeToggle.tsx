@@ -1,13 +1,12 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IconMoon, IconSun } from "@tabler/icons-react";
-import { useCsrfToken } from "@/hooks/useCsrfToken";
 
 export default function DarkModeToggle() {
   const { data: session, update } = useSession();
-  const csrfToken = useCsrfToken();
+  const [isToggling, setIsToggling] = useState(false);
 
   useEffect(() => {
     if (session?.user?.darkMode) {
@@ -18,22 +17,45 @@ export default function DarkModeToggle() {
   }, [session?.user?.darkMode]);
 
   const toggleDarkMode = async () => {
-    if (!session?.user) return;
-
+    if (!session?.user || isToggling) return;
+    
+    setIsToggling(true);
     const newDarkMode = !session.user.darkMode;
 
-    // Update database
-    await fetch("/api/user/preferences", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "x-csrf-token": csrfToken,
-      },
-      body: JSON.stringify({ darkMode: newDarkMode }),
-    });
+    // Immediately update the UI
+    if (newDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
 
-    // Update session
-    await update({ ...session, user: { ...session.user, darkMode: newDarkMode } });
+    try {
+      // Get CSRF token and update database
+      const tokenRes = await fetch("/api/csrf");
+      const { csrfToken } = await tokenRes.json();
+      
+      await fetch("/api/user/preferences", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken,
+        },
+        body: JSON.stringify({ darkMode: newDarkMode }),
+      });
+
+      // Update session
+      await update();
+    } catch (error) {
+      console.error("Failed to toggle dark mode:", error);
+      // Revert UI on error
+      if (!newDarkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } finally {
+      setIsToggling(false);
+    }
   };
 
   if (!session?.user) return null;

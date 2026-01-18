@@ -20,8 +20,18 @@ export type GitHubProfileModel = runtime.Types.Result.DefaultSelection<Prisma.$G
 
 export type AggregateGitHubProfile = {
   _count: GitHubProfileCountAggregateOutputType | null
+  _avg: GitHubProfileAvgAggregateOutputType | null
+  _sum: GitHubProfileSumAggregateOutputType | null
   _min: GitHubProfileMinAggregateOutputType | null
   _max: GitHubProfileMaxAggregateOutputType | null
+}
+
+export type GitHubProfileAvgAggregateOutputType = {
+  cscs: number | null
+}
+
+export type GitHubProfileSumAggregateOutputType = {
+  cscs: number | null
 }
 
 export type GitHubProfileMinAggregateOutputType = {
@@ -29,6 +39,7 @@ export type GitHubProfileMinAggregateOutputType = {
   username: string | null
   avatarUrl: string | null
   bio: string | null
+  cscs: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +49,7 @@ export type GitHubProfileMaxAggregateOutputType = {
   username: string | null
   avatarUrl: string | null
   bio: string | null
+  cscs: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,17 +59,27 @@ export type GitHubProfileCountAggregateOutputType = {
   username: number
   avatarUrl: number
   bio: number
+  cscs: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
+export type GitHubProfileAvgAggregateInputType = {
+  cscs?: true
+}
+
+export type GitHubProfileSumAggregateInputType = {
+  cscs?: true
+}
+
 export type GitHubProfileMinAggregateInputType = {
   id?: true
   username?: true
   avatarUrl?: true
   bio?: true
+  cscs?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +89,7 @@ export type GitHubProfileMaxAggregateInputType = {
   username?: true
   avatarUrl?: true
   bio?: true
+  cscs?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +99,7 @@ export type GitHubProfileCountAggregateInputType = {
   username?: true
   avatarUrl?: true
   bio?: true
+  cscs?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -119,6 +143,18 @@ export type GitHubProfileAggregateArgs<ExtArgs extends runtime.Types.Extensions.
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: GitHubProfileAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: GitHubProfileSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: GitHubProfileMinAggregateInputType
@@ -149,6 +185,8 @@ export type GitHubProfileGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   _count?: GitHubProfileCountAggregateInputType | true
+  _avg?: GitHubProfileAvgAggregateInputType
+  _sum?: GitHubProfileSumAggregateInputType
   _min?: GitHubProfileMinAggregateInputType
   _max?: GitHubProfileMaxAggregateInputType
 }
@@ -158,9 +196,12 @@ export type GitHubProfileGroupByOutputType = {
   username: string
   avatarUrl: string | null
   bio: string | null
+  cscs: number
   createdAt: Date
   updatedAt: Date
   _count: GitHubProfileCountAggregateOutputType | null
+  _avg: GitHubProfileAvgAggregateOutputType | null
+  _sum: GitHubProfileSumAggregateOutputType | null
   _min: GitHubProfileMinAggregateOutputType | null
   _max: GitHubProfileMaxAggregateOutputType | null
 }
@@ -188,6 +229,7 @@ export type GitHubProfileWhereInput = {
   username?: Prisma.StringFilter<"GitHubProfile"> | string
   avatarUrl?: Prisma.StringNullableFilter<"GitHubProfile"> | string | null
   bio?: Prisma.StringNullableFilter<"GitHubProfile"> | string | null
+  cscs?: Prisma.IntFilter<"GitHubProfile"> | number
   createdAt?: Prisma.DateTimeFilter<"GitHubProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GitHubProfile"> | Date | string
   ratings?: Prisma.RatingListRelationFilter
@@ -201,6 +243,7 @@ export type GitHubProfileOrderByWithRelationInput = {
   username?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  cscs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   ratings?: Prisma.RatingOrderByRelationAggregateInput
@@ -217,6 +260,7 @@ export type GitHubProfileWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GitHubProfileWhereInput | Prisma.GitHubProfileWhereInput[]
   avatarUrl?: Prisma.StringNullableFilter<"GitHubProfile"> | string | null
   bio?: Prisma.StringNullableFilter<"GitHubProfile"> | string | null
+  cscs?: Prisma.IntFilter<"GitHubProfile"> | number
   createdAt?: Prisma.DateTimeFilter<"GitHubProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GitHubProfile"> | Date | string
   ratings?: Prisma.RatingListRelationFilter
@@ -230,11 +274,14 @@ export type GitHubProfileOrderByWithAggregationInput = {
   username?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  cscs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.GitHubProfileCountOrderByAggregateInput
+  _avg?: Prisma.GitHubProfileAvgOrderByAggregateInput
   _max?: Prisma.GitHubProfileMaxOrderByAggregateInput
   _min?: Prisma.GitHubProfileMinOrderByAggregateInput
+  _sum?: Prisma.GitHubProfileSumOrderByAggregateInput
 }
 
 export type GitHubProfileScalarWhereWithAggregatesInput = {
@@ -245,6 +292,7 @@ export type GitHubProfileScalarWhereWithAggregatesInput = {
   username?: Prisma.StringWithAggregatesFilter<"GitHubProfile"> | string
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"GitHubProfile"> | string | null
   bio?: Prisma.StringNullableWithAggregatesFilter<"GitHubProfile"> | string | null
+  cscs?: Prisma.IntWithAggregatesFilter<"GitHubProfile"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GitHubProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"GitHubProfile"> | Date | string
 }
@@ -254,6 +302,7 @@ export type GitHubProfileCreateInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingCreateNestedManyWithoutGithubProfileInput
@@ -267,6 +316,7 @@ export type GitHubProfileUncheckedCreateInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutGithubProfileInput
@@ -280,6 +330,7 @@ export type GitHubProfileUpdateInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUpdateManyWithoutGithubProfileNestedInput
@@ -293,6 +344,7 @@ export type GitHubProfileUncheckedUpdateInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutGithubProfileNestedInput
@@ -306,6 +358,7 @@ export type GitHubProfileCreateManyInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -315,6 +368,7 @@ export type GitHubProfileUpdateManyMutationInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -324,6 +378,7 @@ export type GitHubProfileUncheckedUpdateManyInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -338,8 +393,13 @@ export type GitHubProfileCountOrderByAggregateInput = {
   username?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   bio?: Prisma.SortOrder
+  cscs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type GitHubProfileAvgOrderByAggregateInput = {
+  cscs?: Prisma.SortOrder
 }
 
 export type GitHubProfileMaxOrderByAggregateInput = {
@@ -347,6 +407,7 @@ export type GitHubProfileMaxOrderByAggregateInput = {
   username?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   bio?: Prisma.SortOrder
+  cscs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -356,8 +417,13 @@ export type GitHubProfileMinOrderByAggregateInput = {
   username?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   bio?: Prisma.SortOrder
+  cscs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type GitHubProfileSumOrderByAggregateInput = {
+  cscs?: Prisma.SortOrder
 }
 
 export type GitHubProfileScalarRelationFilter = {
@@ -379,6 +445,14 @@ export type GitHubProfileUpdateOneWithoutUserNestedInput = {
   delete?: Prisma.GitHubProfileWhereInput | boolean
   connect?: Prisma.GitHubProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.GitHubProfileUpdateToOneWithWhereWithoutUserInput, Prisma.GitHubProfileUpdateWithoutUserInput>, Prisma.GitHubProfileUncheckedUpdateWithoutUserInput>
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type GitHubProfileCreateNestedOneWithoutPullRequestsInput = {
@@ -428,6 +502,7 @@ export type GitHubProfileCreateWithoutUserInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingCreateNestedManyWithoutGithubProfileInput
@@ -440,6 +515,7 @@ export type GitHubProfileUncheckedCreateWithoutUserInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutGithubProfileInput
@@ -468,6 +544,7 @@ export type GitHubProfileUpdateWithoutUserInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUpdateManyWithoutGithubProfileNestedInput
@@ -480,6 +557,7 @@ export type GitHubProfileUncheckedUpdateWithoutUserInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutGithubProfileNestedInput
@@ -492,6 +570,7 @@ export type GitHubProfileCreateWithoutPullRequestsInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingCreateNestedManyWithoutGithubProfileInput
@@ -504,6 +583,7 @@ export type GitHubProfileUncheckedCreateWithoutPullRequestsInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutGithubProfileInput
@@ -532,6 +612,7 @@ export type GitHubProfileUpdateWithoutPullRequestsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUpdateManyWithoutGithubProfileNestedInput
@@ -544,6 +625,7 @@ export type GitHubProfileUncheckedUpdateWithoutPullRequestsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutGithubProfileNestedInput
@@ -556,6 +638,7 @@ export type GitHubProfileCreateWithoutRatingsInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   pullRequests?: Prisma.PullRequestCreateNestedManyWithoutAuthorInput
@@ -568,6 +651,7 @@ export type GitHubProfileUncheckedCreateWithoutRatingsInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   pullRequests?: Prisma.PullRequestUncheckedCreateNestedManyWithoutAuthorInput
@@ -596,6 +680,7 @@ export type GitHubProfileUpdateWithoutRatingsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pullRequests?: Prisma.PullRequestUpdateManyWithoutAuthorNestedInput
@@ -608,6 +693,7 @@ export type GitHubProfileUncheckedUpdateWithoutRatingsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pullRequests?: Prisma.PullRequestUncheckedUpdateManyWithoutAuthorNestedInput
@@ -620,6 +706,7 @@ export type GitHubProfileCreateWithoutNotificationsInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingCreateNestedManyWithoutGithubProfileInput
@@ -632,6 +719,7 @@ export type GitHubProfileUncheckedCreateWithoutNotificationsInput = {
   username: string
   avatarUrl?: string | null
   bio?: string | null
+  cscs?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   ratings?: Prisma.RatingUncheckedCreateNestedManyWithoutGithubProfileInput
@@ -660,6 +748,7 @@ export type GitHubProfileUpdateWithoutNotificationsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUpdateManyWithoutGithubProfileNestedInput
@@ -672,6 +761,7 @@ export type GitHubProfileUncheckedUpdateWithoutNotificationsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cscs?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ratings?: Prisma.RatingUncheckedUpdateManyWithoutGithubProfileNestedInput
@@ -733,6 +823,7 @@ export type GitHubProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   username?: boolean
   avatarUrl?: boolean
   bio?: boolean
+  cscs?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   ratings?: boolean | Prisma.GitHubProfile$ratingsArgs<ExtArgs>
@@ -747,6 +838,7 @@ export type GitHubProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   username?: boolean
   avatarUrl?: boolean
   bio?: boolean
+  cscs?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["gitHubProfile"]>
@@ -756,6 +848,7 @@ export type GitHubProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   username?: boolean
   avatarUrl?: boolean
   bio?: boolean
+  cscs?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["gitHubProfile"]>
@@ -765,11 +858,12 @@ export type GitHubProfileSelectScalar = {
   username?: boolean
   avatarUrl?: boolean
   bio?: boolean
+  cscs?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GitHubProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "avatarUrl" | "bio" | "createdAt" | "updatedAt", ExtArgs["result"]["gitHubProfile"]>
+export type GitHubProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "avatarUrl" | "bio" | "cscs" | "createdAt" | "updatedAt", ExtArgs["result"]["gitHubProfile"]>
 export type GitHubProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ratings?: boolean | Prisma.GitHubProfile$ratingsArgs<ExtArgs>
   pullRequests?: boolean | Prisma.GitHubProfile$pullRequestsArgs<ExtArgs>
@@ -793,6 +887,7 @@ export type $GitHubProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     username: string
     avatarUrl: string | null
     bio: string | null
+    cscs: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["gitHubProfile"]>
@@ -1226,6 +1321,7 @@ export interface GitHubProfileFieldRefs {
   readonly username: Prisma.FieldRef<"GitHubProfile", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"GitHubProfile", 'String'>
   readonly bio: Prisma.FieldRef<"GitHubProfile", 'String'>
+  readonly cscs: Prisma.FieldRef<"GitHubProfile", 'Int'>
   readonly createdAt: Prisma.FieldRef<"GitHubProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"GitHubProfile", 'DateTime'>
 }

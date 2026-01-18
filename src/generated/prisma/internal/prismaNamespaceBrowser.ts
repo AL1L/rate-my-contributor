@@ -99,6 +99,7 @@ export const GitHubProfileScalarFieldEnum = {
   username: 'username',
   avatarUrl: 'avatarUrl',
   bio: 'bio',
+  cscs: 'cscs',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/sanitize";
 import { verifyCsrfToken } from "@/lib/csrf";
+import { updateCSCS } from "@/lib/cscs";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -74,6 +75,9 @@ export async function POST(req: NextRequest) {
       },
     });
   }
+
+  // Update CSCS for the rated user
+  await updateCSCS(githubProfileId);
 
   return NextResponse.json(rating);
 }

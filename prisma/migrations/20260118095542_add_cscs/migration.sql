@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "cscs" INTEGER NOT NULL DEFAULT 500;

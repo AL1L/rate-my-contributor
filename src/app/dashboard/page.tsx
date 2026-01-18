@@ -8,7 +8,6 @@ import RatingStars from "@/components/RatingStars";
 import Link from "next/link";
 import { IconBell, IconStar, IconGitPullRequest } from "@tabler/icons-react";
 import NotificationsList from "@/components/NotificationsList";
-import DarkModeToggle from "@/components/DarkModeToggle";
 
 export const dynamic = 'force-dynamic';
 
@@ -60,10 +59,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-zinc-900 dark:text-white">Dashboard</h1>
-          <DarkModeToggle />
-        </div>
+        <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-8">Dashboard</h1>
 
         {/* User Overview */}
         <Card className="p-8 mb-8">

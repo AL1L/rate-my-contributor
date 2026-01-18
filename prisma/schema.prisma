@@ -37,6 +37,7 @@ model GitHubProfile {
   username      String         @unique
   avatarUrl     String?
   bio           String?
+  cscs          Int            @default(500)
   ratings       Rating[]
   pullRequests  PullRequest[]
   notifications Notification[]
