@@ -1,5 +1,8 @@
+"use client";
+
 import { IconBrandGithub } from "@tabler/icons-react";
 import Card from "@/components/Card";
+import { signIn } from "next-auth/react";
 
 export default function SignInPage() {
   return (
@@ -14,13 +17,13 @@ export default function SignInPage() {
           </p>
         </div>
 
-        <a
-          href="/api/auth/signin/github"
+        <button
+          onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
           className="flex items-center justify-center gap-3 w-full px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg font-medium hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
         >
           <IconBrandGithub size={24} />
           <span>Sign in with GitHub</span>
-        </a>
+        </button>
 
         <p className="text-sm text-zinc-600 dark:text-zinc-400 text-center mt-6">
           By signing in, you agree to our Terms of Service and Privacy Policy
