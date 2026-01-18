@@ -14,7 +14,7 @@ export async function DELETE(
   }
 
   // Check if user is admin
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: { email: session.user.email! },
   });
 
