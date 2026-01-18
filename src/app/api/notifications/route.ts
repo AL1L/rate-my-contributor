@@ -9,8 +9,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Get user's GitHub profile ID
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { githubProfileId: true },
+  });
+
+  if (!user?.githubProfileId) {
+    return NextResponse.json([]);
+  }
+
   const notifications = await prisma.notification.findMany({
-    where: { userId: session.user.id },
+    where: { githubProfileId: user.githubProfileId },
     orderBy: { createdAt: "desc" },
     take: 50,
   });
@@ -26,13 +36,23 @@ export async function PATCH(req: NextRequest) {
 
   const { id } = await req.json();
 
-  // Check if notification exists and belongs to user
-  const notification = await prisma.notification.findUnique({
-    where: { id },
-    select: { userId: true },
+  // Get user's GitHub profile ID
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { githubProfileId: true },
   });
 
-  if (!notification || notification.userId !== session.user.id) {
+  if (!user?.githubProfileId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Check if notification exists and belongs to user's GitHub profile
+  const notification = await prisma.notification.findUnique({
+    where: { id },
+    select: { githubProfileId: true },
+  });
+
+  if (!notification || notification.githubProfileId !== user.githubProfileId) {
     return NextResponse.json({ error: "Notification not found" }, { status: 404 });
   }
 

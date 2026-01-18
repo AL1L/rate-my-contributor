@@ -14,7 +14,7 @@ export function CsrfProvider({ children }: { children: React.ReactNode }) {
       // Generate CSRF token on client side using the same algorithm
       const generateToken = async () => {
         const encoder = new TextEncoder();
-        const data = encoder.encode(session.user.id);
+        const data = encoder.encode(session.user!.id);
         const hashBuffer = await crypto.subtle.digest("SHA-256", data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
