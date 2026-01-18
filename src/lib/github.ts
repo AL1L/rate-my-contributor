@@ -19,6 +19,7 @@ export interface GitHubPR {
   state: string;
   created_at: string;
   updated_at: string;
+  repository_url?: string;
   user: {
     login: string;
     avatar_url: string;
@@ -94,8 +95,22 @@ export async function fetchUserPRs(username: string): Promise<GitHubPR[]> {
     );
     if (!response.ok) return [];
     const data = await response.json();
-    cache.set(cacheKey, data.items);
-    return data.items;
+    
+    // Filter out PRs where the author owns the repository
+    const filteredPRs = data.items.filter((pr: GitHubPR) => {
+      if (!pr.repository_url) return true;
+      
+      // Extract owner from repository_url: https://api.github.com/repos/owner/repo
+      const match = pr.repository_url.match(/\/repos\/([^\/]+)\//);
+      if (!match) return true;
+      
+      const repoOwner = match[1];
+      // Exclude PRs where author owns the repo (but allow org repos)
+      return repoOwner.toLowerCase() !== username.toLowerCase();
+    });
+    
+    cache.set(cacheKey, filteredPRs);
+    return filteredPRs;
   } catch (error) {
     console.error("Error fetching user PRs:", error);
     return [];

@@ -9,6 +9,7 @@ import { IconGitPullRequest, IconGitCommit, IconBrandGithub } from "@tabler/icon
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -319,11 +320,21 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
               </div>
             )}
 
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
-              Ratings
-            </h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                Recent Ratings
+              </h2>
+              {profile.ratings.length > 5 && (
+                <Link 
+                  href={`/user/${username}/ratings`}
+                  className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                >
+                  View all {profile.ratings.length} ratings →
+                </Link>
+              )}
+            </div>
             <div className="space-y-4">
-              {profile.ratings.map((rating) => (
+              {profile.ratings.slice(0, 5).map((rating) => (
                 <Card key={rating.id} className="p-4">
                   <RatingStars rating={rating.score} />
                   {rating.comment && (
@@ -340,6 +351,14 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                 <Card className="p-8 text-center text-zinc-600 dark:text-zinc-400">
                   No ratings yet
                 </Card>
+              )}
+              {profile.ratings.length > 5 && (
+                <Link 
+                  href={`/user/${username}/ratings`}
+                  className="block text-center py-3 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                >
+                  View all ratings
+                </Link>
               )}
             </div>
           </div>

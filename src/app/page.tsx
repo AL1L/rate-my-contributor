@@ -35,10 +35,18 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  // Get top rated GitHub profiles
+  // Get top contributors by CSCS (excluding default/low scores)
   const profiles = await prisma.gitHubProfile.findMany({
+    where: {
+      cscs: {
+        gt: 500,
+      },
+    },
     include: {
       ratings: true,
+    },
+    orderBy: {
+      cscs: 'desc',
     },
     take: 6,
   });
@@ -49,7 +57,7 @@ export default async function HomePage() {
         ? profile.ratings.reduce((sum, r) => sum + r.score, 0) / profile.ratings.length
         : 0;
     return { ...profile, avgRating };
-  }).sort((a, b) => b.avgRating - a.avgRating);
+  });
 
   // Get stats
   const totalUsers = await prisma.gitHubProfile.count();
@@ -88,7 +96,7 @@ export default async function HomePage() {
       {/* Stats Section */}
       <section className="py-12 px-4 bg-white dark:bg-zinc-900">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="text-center">
               <div className="flex justify-center mb-4">
                 <IconUsers size={48} className="text-zinc-900 dark:text-white" />
@@ -107,7 +115,7 @@ export default async function HomePage() {
               </div>
               <div className="text-zinc-600 dark:text-zinc-400">Ratings</div>
             </div>
-            <div className="text-center">
+            {/* <div className="text-center">
               <div className="flex justify-center mb-4">
                 <IconGitPullRequest size={48} className="text-zinc-900 dark:text-white" />
               </div>
@@ -115,7 +123,7 @@ export default async function HomePage() {
                 {totalPRs}
               </div>
               <div className="text-zinc-600 dark:text-zinc-400">Pull Requests</div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -132,11 +140,26 @@ export default async function HomePage() {
                 <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="flex items-center gap-4 mb-4">
                     <UserAvatar src={profile.avatarUrl} username={profile.username} size={60} />
-                    <div>
+                    <div className="flex-1">
                       <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
                         {profile.username}
                       </h3>
                       <p className="text-sm text-zinc-600 dark:text-zinc-400">{profile.bio || 'GitHub Contributor'}</p>
+                      {/* <div className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-bold ${
+                        profile.cscs < 100
+                          ? "bg-red-950 text-red-100"
+                          : profile.cscs < 250
+                          ? "bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100"
+                          : profile.cscs < 500
+                          ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100"
+                          : profile.cscs < 750
+                          ? "bg-lime-100 dark:bg-lime-900 text-lime-900 dark:text-lime-100"
+                          : profile.cscs < 950
+                          ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100"
+                          : "bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100"
+                      }`}>
+                        CSCS: {profile.cscs}
+                      </div> */}
                     </div>
                   </div>
                   {profile.avgRating > 0 && (
