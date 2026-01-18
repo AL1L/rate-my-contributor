@@ -36,8 +36,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // Require authentication for other API routes except public ones
-    const publicApiRoutes = ["/api/users"];
-    const isPublicRoute = publicApiRoutes.some(route => pathname === route);
+    const publicApiRoutes = ["/api/users", "/api/og"];
+    const isPublicRoute = publicApiRoutes.some(route => pathname.startsWith(route));
 
     if (!isPublicRoute && !token) {
       return NextResponse.json(
